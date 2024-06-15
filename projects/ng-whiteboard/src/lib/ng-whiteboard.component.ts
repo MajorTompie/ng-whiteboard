@@ -53,6 +53,7 @@ export class NgWhiteboardComponent implements OnInit, OnChanges, AfterViewInit, 
   @Input() set data(data: WhiteboardElement[]) {
     if (data) {
       this._data.next(data);
+      this.undoStack = this._getUndoStack(data) ?? this.undoStack;
     }
   }
   get data(): WhiteboardElement[] {
@@ -747,6 +748,17 @@ export class NgWhiteboardComponent implements OnInit, OnChanges, AfterViewInit, 
       }
       const id = mouse_target.getAttribute('data-wb-id');
       return this.data.find((el) => el.id === id) as WhiteboardElement;
+    }
+    return null;
+  }
+  private _getUndoStack(data: WhiteboardElement[]): WhiteboardElement[][] | null {
+    if (data) {
+      let undoStack: WhiteboardElement[][] = [];
+      for (let i = 1; i <= data.length; i++) {
+        const subArray = data.slice(0, i);
+        undoStack.push(subArray);
+      }
+      return undoStack;
     }
     return null;
   }
